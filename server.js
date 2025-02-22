@@ -1,57 +1,55 @@
 const express = require('express');
 const fs = require('fs');
+const cors = require('cors');
 const path = './tasks.json';
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; 
 
-app.use(express.json());
-app.use(express.static('public'));
+app.use(cors()); 
+app.use(express.json());  
+app.use(express.static('public')); 
 
-// Ensure tasks.json exists and is not empty
 let tasks = [];
-
-// Check if the file exists, and if not, create it
 if (fs.existsSync(path)) {
-    // If the file exists, read and parse it
     const data = fs.readFileSync(path, 'utf-8');
     if (data) {
-        tasks = JSON.parse(data); // Parse the JSON data into the tasks array
+        tasks = JSON.parse(data);
     }
 } else {
-    // If the file doesn't exist, create it with an empty array
     fs.writeFileSync(path, JSON.stringify(tasks));
 }
 
 app.get('/tasks', (req, res) => res.json(tasks));
 
 app.post('/tasks', (req, res) => {
-    const newTask = { 
+    const newTask = {
         id: Date.now().toString(),
         text: req.body.text,
         category: req.body.category,
         completed: false
     };
     tasks.push(newTask);
-    fs.writeFileSync(path, JSON.stringify(tasks));  // Save tasks back to tasks.json
-    res.sendStatus(201);  // Created
+    fs.writeFileSync(path, JSON.stringify(tasks));
+    res.sendStatus(201); // Task created
 });
 
 app.put('/tasks/:id', (req, res) => {
     tasks = tasks.map(task => task.id === req.params.id ? { ...task, text: req.body.text } : task);
-    fs.writeFileSync(path, JSON.stringify(tasks));  // Save updated tasks
-    res.sendStatus(200);  // OK
+    fs.writeFileSync(path, JSON.stringify(tasks));
+    res.sendStatus(200); 
 });
 
 app.put('/tasks/:id/complete', (req, res) => {
     tasks = tasks.map(task => task.id === req.params.id ? { ...task, completed: !task.completed } : task);
-    fs.writeFileSync(path, JSON.stringify(tasks));  // Save updated tasks
-    res.sendStatus(200);  // OK
+    fs.writeFileSync(path, JSON.stringify(tasks));
+    res.sendStatus(200); 
 });
 
 app.delete('/tasks/:id', (req, res) => {
     tasks = tasks.filter(task => task.id !== req.params.id);
-    fs.writeFileSync(path, JSON.stringify(tasks));  // Save updated tasks
-    res.sendStatus(200);  // OK
+    fs.writeFileSync(path, JSON.stringify(tasks));
+    res.sendStatus(200); 
 });
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+
