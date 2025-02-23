@@ -12,3 +12,4 @@ The *Task Manager App* is a simple web-based tool to help users organize their t
 - *Persistent Storage* → Tasks are stored in a JSON file to retain data even after refreshing.  
 
 This app is designed to be *simple, fast, and easy to use* for daily task management.
+Visit live site at: https://thegirlinhoodie.github.io/task-manager/public/
